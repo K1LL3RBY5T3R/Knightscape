@@ -9,18 +9,20 @@ public class HealPlayer : MonoBehaviour
     private bool canHeal;
     [SerializeField] private SpriteRenderer heal;
 
-    [SerializeField] private Sprite mySprite; // Use SerializeField for inspector access
-    [SerializeField] private float startSizePercentage = 0.5f; // Initial size as percentage
-    [SerializeField] private float endSizePercentage = 0.1f; // Final size as percentage
-    [SerializeField] private float shrinkTime = 1.0f; // Time to shrink
+    [SerializeField] private Sprite mySprite; 
+    [SerializeField] private float startSizePercentage = 0.5f; 
+    [SerializeField] private float endSizePercentage = 0.1f; 
+    [SerializeField] private float shrinkTime = 1.0f; 
     [SerializeField] private AudioController audioController;
 
+    // Start is called before the first frame update
     private void Start()
     {
         kills = 0;
         canHeal = false;
     }
 
+    // Update is called once per frame
     private void Update()
     {
         canHealPlayer();
@@ -34,29 +36,30 @@ public class HealPlayer : MonoBehaviour
         heal.enabled = canHeal;
     }
 
+    /*
+     * Activates the heal action and sets all params to defaults
+     */
     private void Heal()
     {
         canHeal = false;
         kills = 0;
-        // Add your healing logic here
-        // For example, increase player's health
-
-        // Replace the following line with your actual healing logic
-        // For example, increase player's health variable or call a healing function
         audioController.PlayHealSound();
         playerHealth.Heal();
     }
 
+    /*
+     * Creates the game object for the heal action 
+     */
     private void Potion()
     {
 
-        float initialSize = Camera.main.orthographicSize * 2 * startSizePercentage;
+        float initialSize = Camera.main.orthographicSize * 2 * startSizePercentage;//Sets the size according to a percentage of the screen
         GameObject potion = new GameObject("Potion");
         SpriteRenderer spriteRenderer = potion.AddComponent<SpriteRenderer>();
         spriteRenderer.sprite = mySprite;
-        spriteRenderer.sortingOrder = 25;
+        spriteRenderer.sortingOrder = 25;// makes it appear above everything
         potion.transform.localScale = new Vector3(initialSize, initialSize, 1f);
-        potion.transform.position = Camera.main.transform.position + new Vector3(0, -0.5f, 10f);
+        potion.transform.position = Camera.main.transform.position + new Vector3(0, -0.5f, 10f);// sets the position in accorance with the camera
 
         // Start coroutine to shrink the object over time
         StartCoroutine(ShrinkObject(potion, initialSize, endSizePercentage, shrinkTime));
@@ -65,6 +68,9 @@ public class HealPlayer : MonoBehaviour
         Destroy(potion, shrinkTime + 0.1f);
     }
 
+    /*
+     * Shrinks the game object over a time period from starting size to ending size
+     */
     private IEnumerator ShrinkObject(GameObject obj, float startSize, float endSize, float duration)
     {
         float startTime = Time.time;
@@ -80,6 +86,10 @@ public class HealPlayer : MonoBehaviour
             yield return null;
         }
     }
+
+    /*
+     * Checks if the player can use the heal action
+     */
     public void canHealPlayer()
     {
         if (kills > 10)
@@ -88,6 +98,9 @@ public class HealPlayer : MonoBehaviour
         }
     }
 
+    /*
+     * Sets the current kill number +1 
+     */
     public void setKills()
     {
         kills += 1;
